@@ -6,8 +6,8 @@ import { useApp } from '../layout';
 import { Wrench, Plus, X, Check, AlertTriangle, Clock } from 'lucide-react';
 
 const STATUS_COLORS: Record<string, string> = {
-  pending: '#FB923C', in_progress: '#60A5FA', completed: '#4ADE80',
-  overdue: '#F87171', cancelled: '#666',
+  pending: '#EA580C', in_progress: '#2563EB', completed: '#16A34A',
+  overdue: '#DC2626', cancelled: '#999',
 };
 
 function Badge({ text, color }: { text: string; color: string }) {
@@ -92,9 +92,9 @@ export default function RepairsPage() {
   const displayRepairs = tab === 'active' ? activeRepairs : completedRepairs;
 
   const inputStyle = {
-    width: '100%', padding: '9px 12px', background: '#1E1E1E',
-    border: '1px solid #2A2A2A', borderRadius: 8, color: '#fff',
-    fontSize: 13, fontFamily: "'Neuton', serif",
+    width: '100%', padding: '9px 12px', background: '#1A1A1A',
+    border: '1px solid #E0E0E0', borderRadius: 8, color: '#1A1A1A',
+    fontSize: 13, fontFamily: 'var(--font-main)',
   } as const;
 
   return (
@@ -111,7 +111,7 @@ export default function RepairsPage() {
         </div>
         <button onClick={() => setShowModal(true)} style={{
           display: 'flex', alignItems: 'center', gap: 8, padding: '9px 18px',
-          borderRadius: 8, border: 'none', background: '#FFD700', color: '#000',
+          borderRadius: 8, border: 'none', background: '#D4A800', color: '#fff',
           fontSize: 13, fontWeight: 600, cursor: 'pointer',
         }}>
           <Plus size={15} /> Log Repair
@@ -119,7 +119,7 @@ export default function RepairsPage() {
       </div>
 
       {/* Table */}
-      <div style={{ overflowX: 'auto', border: '1px solid #2A2A2A', borderRadius: 10 }}>
+      <div style={{ overflowX: 'auto', border: '1px solid #E0E0E0', borderRadius: 10 }}>
         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12.5 }}>
           <thead>
             <tr>
@@ -127,40 +127,40 @@ export default function RepairsPage() {
                 <th key={h} style={{
                   padding: '12px 14px', textAlign: 'left', background: '#111',
                   color: '#999', fontWeight: 600, fontSize: 10.5, textTransform: 'uppercase',
-                  letterSpacing: 0.6, borderBottom: '1px solid #2A2A2A', whiteSpace: 'nowrap',
+                  letterSpacing: 0.6, borderBottom: '1px solid #E0E0E0', whiteSpace: 'nowrap',
                 }}>{h}</th>
               ))}
             </tr>
           </thead>
           <tbody>
             {loading ? (
-              <tr><td colSpan={9} style={{ padding: 40, textAlign: 'center', color: '#666' }}>Loading...</td></tr>
+              <tr><td colSpan={9} style={{ padding: 40, textAlign: 'center', color: '#999' }}>Loading...</td></tr>
             ) : displayRepairs.length === 0 ? (
-              <tr><td colSpan={9} style={{ padding: 40, textAlign: 'center', color: '#666' }}>No {tab} repairs</td></tr>
+              <tr><td colSpan={9} style={{ padding: 40, textAlign: 'center', color: '#999' }}>No {tab} repairs</td></tr>
             ) : displayRepairs.map(r => {
               const isOverdue = r.expected_return_date && new Date(r.expected_return_date) < new Date() && r.status !== 'completed';
               return (
-                <tr key={r.id} style={{ borderBottom: '1px solid #2A2A2A' }}
-                    onMouseEnter={e => (e.currentTarget.style.background = '#1A1A1A')}
+                <tr key={r.id} style={{ borderBottom: '1px solid #E0E0E0' }}
+                    onMouseEnter={e => (e.currentTarget.style.background = '#F8F8F8')}
                     onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
-                  <td style={{ padding: '11px 14px', color: '#FFD700', fontWeight: 600 }}>{r.repair_ref}</td>
-                  <td style={{ padding: '11px 14px', color: '#F0F0F0' }}>{r.assets?.asset_tag || '—'}<br/><span style={{ fontSize: 10, color: '#666' }}>{r.assets?.model}</span></td>
-                  <td style={{ padding: '11px 14px', color: '#F0F0F0' }}>{r.vendor_name}</td>
-                  <td style={{ padding: '11px 14px', color: '#F0F0F0', maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{r.issue_description}</td>
-                  <td style={{ padding: '11px 14px', color: '#4ADE80', fontWeight: 600 }}>${Number(r.repair_cost).toLocaleString()}</td>
-                  <td style={{ padding: '11px 14px', color: '#F0F0F0' }}>{r.sent_date}</td>
-                  <td style={{ padding: '11px 14px', color: isOverdue ? '#F87171' : '#F0F0F0' }}>
+                  <td style={{ padding: '11px 14px', color: '#B8960C', fontWeight: 600 }}>{r.repair_ref}</td>
+                  <td style={{ padding: '11px 14px', color: '#1A1A1A' }}>{r.assets?.asset_tag || '—'}<br/><span style={{ fontSize: 10, color: '#999' }}>{r.assets?.model}</span></td>
+                  <td style={{ padding: '11px 14px', color: '#1A1A1A' }}>{r.vendor_name}</td>
+                  <td style={{ padding: '11px 14px', color: '#1A1A1A', maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{r.issue_description}</td>
+                  <td style={{ padding: '11px 14px', color: '#16A34A', fontWeight: 600 }}>${Number(r.repair_cost).toLocaleString()}</td>
+                  <td style={{ padding: '11px 14px', color: '#1A1A1A' }}>{r.sent_date}</td>
+                  <td style={{ padding: '11px 14px', color: isOverdue ? '#DC2626' : '#1A1A1A' }}>
                     {r.expected_return_date || '—'}
-                    {isOverdue && <AlertTriangle size={12} color="#F87171" style={{ marginLeft: 4, verticalAlign: 'middle' }} />}
+                    {isOverdue && <AlertTriangle size={12} color="#DC2626" style={{ marginLeft: 4, verticalAlign: 'middle' }} />}
                   </td>
                   <td style={{ padding: '11px 14px' }}>
-                    <Badge text={isOverdue ? 'overdue' : r.status} color={isOverdue ? '#F87171' : STATUS_COLORS[r.status]} />
+                    <Badge text={isOverdue ? 'overdue' : r.status} color={isOverdue ? '#DC2626' : STATUS_COLORS[r.status]} />
                   </td>
                   <td style={{ padding: '11px 14px' }}>
                     {r.status !== 'completed' && (
                       <button onClick={() => handleComplete(r)} style={{
                         padding: '4px 12px', borderRadius: 6, border: 'none',
-                        background: '#4ADE8020', color: '#4ADE80', fontSize: 11,
+                        background: '#16A34A20', color: '#16A34A', fontSize: 11,
                         cursor: 'pointer', fontWeight: 600,
                       }}>Complete</button>
                     )}
@@ -174,17 +174,17 @@ export default function RepairsPage() {
 
       {/* Create Repair Modal */}
       {showModal && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.3)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}
              onClick={() => setShowModal(false)}>
-          <div onClick={e => e.stopPropagation()} style={{ background: '#141414', border: '1px solid #2A2A2A', borderRadius: 16, width: '100%', maxWidth: 540 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '18px 24px', borderBottom: '1px solid #2A2A2A' }}>
-              <h3 style={{ margin: 0, color: '#FFD700', fontSize: 20 }}>Log Repair</h3>
-              <button onClick={() => setShowModal(false)} style={{ background: 'transparent', border: 'none', color: '#666', cursor: 'pointer' }}><X size={18} /></button>
+          <div onClick={e => e.stopPropagation()} style={{ background: '#1A1A1Afff', border: '1px solid #E0E0E0', borderRadius: 16, width: '100%', maxWidth: 540 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '18px 24px', borderBottom: '1px solid #E0E0E0' }}>
+              <h3 style={{ margin: 0, color: '#B8960C', fontSize: 20 }}>Log Repair</h3>
+              <button onClick={() => setShowModal(false)} style={{ background: 'transparent', border: 'none', color: '#999', cursor: 'pointer' }}><X size={18} /></button>
             </div>
             <form onSubmit={handleCreateRepair} style={{ padding: 24, display: 'flex', flexDirection: 'column', gap: 14 }}>
               <div>
                 <label style={{ display: 'block', fontSize: 11, color: '#999', marginBottom: 4, textTransform: 'uppercase', fontWeight: 600 }}>Asset *</label>
-                <select required value={form.asset_id} onChange={e => setForm(f => ({...f, asset_id: e.target.value}))} style={{ ...inputStyle, color: form.asset_id ? '#fff' : '#666' }}>
+                <select required value={form.asset_id} onChange={e => setForm(f => ({...f, asset_id: e.target.value}))} style={{ ...inputStyle, color: form.asset_id ? '#1A1A1A' : '#999' }}>
                   <option value="">Select asset...</option>
                   {assets.map(a => <option key={a.id} value={a.id}>{a.asset_tag} — {a.model}</option>)}
                 </select>
@@ -214,8 +214,8 @@ export default function RepairsPage() {
                 </div>
               </div>
               <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
-                <button type="button" onClick={() => setShowModal(false)} style={{ padding: '9px 18px', borderRadius: 8, border: '1px solid #2A2A2A', background: 'transparent', color: '#F0F0F0', fontSize: 13, cursor: 'pointer' }}>Cancel</button>
-                <button type="submit" style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '9px 18px', borderRadius: 8, border: 'none', background: '#FFD700', color: '#000', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
+                <button type="button" onClick={() => setShowModal(false)} style={{ padding: '9px 18px', borderRadius: 8, border: '1px solid #E0E0E0', background: 'transparent', color: '#1A1A1A', fontSize: 13, cursor: 'pointer' }}>Cancel</button>
+                <button type="submit" style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '9px 18px', borderRadius: 8, border: 'none', background: '#D4A800', color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
                   <Wrench size={15} /> Log Repair
                 </button>
               </div>

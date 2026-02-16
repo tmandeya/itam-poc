@@ -61,9 +61,9 @@ export default function SettingsPage() {
   }
 
   const inputStyle = {
-    width: '100%', padding: '9px 12px', background: '#1E1E1E',
-    border: '1px solid #2A2A2A', borderRadius: 8, color: '#fff',
-    fontSize: 13, fontFamily: "'Neuton', serif",
+    width: '100%', padding: '9px 12px', background: '#1A1A1A',
+    border: '1px solid #E0E0E0', borderRadius: 8, color: '#1A1A1A',
+    fontSize: 13, fontFamily: 'var(--font-main)',
   } as const;
 
   const isSuperAdmin = profile?.role === 'super_admin';
@@ -75,21 +75,21 @@ export default function SettingsPage() {
       </p>
 
       {loading ? (
-        <p style={{ color: '#666', textAlign: 'center', padding: 40 }}>Loading...</p>
+        <p style={{ color: '#999', textAlign: 'center', padding: 40 }}>Loading...</p>
       ) : (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: 16 }}>
           {sites.map(site => {
             const stats = siteStats[site.id] || { assets: 0, users: 0 };
             return (
               <div key={site.id} style={{
-                background: '#141414', border: '1px solid #2A2A2A', borderRadius: 12,
+                background: '#1A1A1Afff', border: '1px solid #E0E0E0', borderRadius: 12,
                 overflow: 'hidden', transition: 'border-color 0.2s',
               }}
               onMouseEnter={e => (e.currentTarget.style.borderColor = '#FFD700')}
-              onMouseLeave={e => (e.currentTarget.style.borderColor = '#2A2A2A')}>
+              onMouseLeave={e => (e.currentTarget.style.borderColor = '#E0E0E0')}>
                 {/* Header */}
                 <div style={{
-                  padding: '16px 20px', borderBottom: '1px solid #2A2A2A',
+                  padding: '16px 20px', borderBottom: '1px solid #E0E0E0',
                   display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
@@ -97,10 +97,10 @@ export default function SettingsPage() {
                       width: 42, height: 42, borderRadius: 10,
                       background: 'rgba(255,215,0,0.15)',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      fontSize: 14, fontWeight: 700, color: '#FFD700',
+                      fontSize: 14, fontWeight: 700, color: '#B8960C',
                     }}>{site.id}</div>
                     <div>
-                      <div style={{ fontSize: 14, fontWeight: 600, color: '#F0F0F0' }}>{site.name}</div>
+                      <div style={{ fontSize: 14, fontWeight: 600, color: '#1A1A1A' }}>{site.name}</div>
                       <div style={{ fontSize: 11, color: '#999', display: 'flex', alignItems: 'center', gap: 4 }}>
                         <MapPin size={10} /> {site.city}, {site.country}
                       </div>
@@ -109,7 +109,7 @@ export default function SettingsPage() {
                   {isSuperAdmin && (
                     <button onClick={() => openEdit(site)} style={{
                       padding: '4px 10px', borderRadius: 6, border: 'none',
-                      background: 'rgba(255,215,0,0.15)', color: '#FFD700',
+                      background: 'rgba(255,215,0,0.15)', color: '#B8960C',
                       fontSize: 11, cursor: 'pointer', fontWeight: 600,
                       display: 'flex', alignItems: 'center', gap: 4,
                     }}>
@@ -123,22 +123,22 @@ export default function SettingsPage() {
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                     <Package size={14} color="#FFD700" />
                     <div>
-                      <div style={{ fontSize: 18, fontWeight: 700, color: '#F0F0F0' }}>{stats.assets}</div>
-                      <div style={{ fontSize: 10, color: '#666', textTransform: 'uppercase' }}>Assets</div>
+                      <div style={{ fontSize: 18, fontWeight: 700, color: '#1A1A1A' }}>{stats.assets}</div>
+                      <div style={{ fontSize: 10, color: '#999', textTransform: 'uppercase' }}>Assets</div>
                     </div>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <Users size={14} color="#60A5FA" />
+                    <Users size={14} color="#2563EB" />
                     <div>
-                      <div style={{ fontSize: 18, fontWeight: 700, color: '#F0F0F0' }}>{stats.users}</div>
-                      <div style={{ fontSize: 10, color: '#666', textTransform: 'uppercase' }}>Users</div>
+                      <div style={{ fontSize: 18, fontWeight: 700, color: '#1A1A1A' }}>{stats.users}</div>
+                      <div style={{ fontSize: 10, color: '#999', textTransform: 'uppercase' }}>Users</div>
                     </div>
                   </div>
                 </div>
 
                 {/* Contact */}
                 {site.contact_email && (
-                  <div style={{ padding: '0 20px 16px', fontSize: 11, color: '#666' }}>
+                  <div style={{ padding: '0 20px 16px', fontSize: 11, color: '#999' }}>
                     Contact: {site.contact_email}
                   </div>
                 )}
@@ -150,12 +150,12 @@ export default function SettingsPage() {
 
       {/* Edit Site Modal */}
       {editSite && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.3)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}
              onClick={() => setEditSite(null)}>
-          <div onClick={e => e.stopPropagation()} style={{ background: '#141414', border: '1px solid #2A2A2A', borderRadius: 16, width: '100%', maxWidth: 540 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '18px 24px', borderBottom: '1px solid #2A2A2A' }}>
-              <h3 style={{ margin: 0, color: '#FFD700', fontSize: 20 }}>Edit Site — {form.id}</h3>
-              <button onClick={() => setEditSite(null)} style={{ background: 'transparent', border: 'none', color: '#666', cursor: 'pointer' }}><X size={18} /></button>
+          <div onClick={e => e.stopPropagation()} style={{ background: '#1A1A1Afff', border: '1px solid #E0E0E0', borderRadius: 16, width: '100%', maxWidth: 540 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '18px 24px', borderBottom: '1px solid #E0E0E0' }}>
+              <h3 style={{ margin: 0, color: '#B8960C', fontSize: 20 }}>Edit Site — {form.id}</h3>
+              <button onClick={() => setEditSite(null)} style={{ background: 'transparent', border: 'none', color: '#999', cursor: 'pointer' }}><X size={18} /></button>
             </div>
             <div style={{ padding: 24, display: 'flex', flexDirection: 'column', gap: 12 }}>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
@@ -195,8 +195,8 @@ export default function SettingsPage() {
                 </div>
               </div>
               <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end', marginTop: 8 }}>
-                <button onClick={() => setEditSite(null)} style={{ padding: '9px 18px', borderRadius: 8, border: '1px solid #2A2A2A', background: 'transparent', color: '#F0F0F0', fontSize: 13, cursor: 'pointer' }}>Cancel</button>
-                <button onClick={handleSave} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '9px 18px', borderRadius: 8, border: 'none', background: '#FFD700', color: '#000', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
+                <button onClick={() => setEditSite(null)} style={{ padding: '9px 18px', borderRadius: 8, border: '1px solid #E0E0E0', background: 'transparent', color: '#1A1A1A', fontSize: 13, cursor: 'pointer' }}>Cancel</button>
+                <button onClick={handleSave} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '9px 18px', borderRadius: 8, border: 'none', background: '#D4A800', color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
                   <Check size={15} /> Save Changes
                 </button>
               </div>

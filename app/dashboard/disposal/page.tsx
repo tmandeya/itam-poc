@@ -6,7 +6,7 @@ import { useApp } from '../layout';
 import { Trash2, Plus, X, Check, AlertTriangle } from 'lucide-react';
 
 const STATUS_COLORS: Record<string, string> = {
-  pending_approval: '#FB923C', approved: '#60A5FA', completed: '#4ADE80', rejected: '#F87171',
+  pending_approval: '#EA580C', approved: '#2563EB', completed: '#16A34A', rejected: '#DC2626',
 };
 const REASONS = ['end_of_life', 'damaged_beyond_repair', 'stolen', 'sold', 'donated', 'recycled', 'lost'];
 
@@ -86,9 +86,9 @@ export default function DisposalPage() {
   }
 
   const inputStyle = {
-    width: '100%', padding: '9px 12px', background: '#1E1E1E',
-    border: '1px solid #2A2A2A', borderRadius: 8, color: '#fff',
-    fontSize: 13, fontFamily: "'Neuton', serif",
+    width: '100%', padding: '9px 12px', background: '#1A1A1A',
+    border: '1px solid #E0E0E0', borderRadius: 8, color: '#1A1A1A',
+    fontSize: 13, fontFamily: 'var(--font-main)',
   } as const;
 
   return (
@@ -97,14 +97,14 @@ export default function DisposalPage() {
         <p style={{ color: '#999', fontSize: 13 }}>{disposals.length} disposal requests</p>
         <button onClick={() => setShowModal(true)} style={{
           display: 'flex', alignItems: 'center', gap: 8, padding: '9px 18px',
-          borderRadius: 8, border: 'none', background: '#FFD700', color: '#000',
+          borderRadius: 8, border: 'none', background: '#D4A800', color: '#fff',
           fontSize: 13, fontWeight: 600, cursor: 'pointer',
         }}>
           <Plus size={15} /> Request Disposal
         </button>
       </div>
 
-      <div style={{ overflowX: 'auto', border: '1px solid #2A2A2A', borderRadius: 10 }}>
+      <div style={{ overflowX: 'auto', border: '1px solid #E0E0E0', borderRadius: 10 }}>
         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12.5 }}>
           <thead>
             <tr>
@@ -112,37 +112,37 @@ export default function DisposalPage() {
                 <th key={h} style={{
                   padding: '12px 14px', textAlign: 'left', background: '#111',
                   color: '#999', fontWeight: 600, fontSize: 10.5, textTransform: 'uppercase',
-                  letterSpacing: 0.6, borderBottom: '1px solid #2A2A2A', whiteSpace: 'nowrap',
+                  letterSpacing: 0.6, borderBottom: '1px solid #E0E0E0', whiteSpace: 'nowrap',
                 }}>{h}</th>
               ))}
             </tr>
           </thead>
           <tbody>
             {loading ? (
-              <tr><td colSpan={8} style={{ padding: 40, textAlign: 'center', color: '#666' }}>Loading...</td></tr>
+              <tr><td colSpan={8} style={{ padding: 40, textAlign: 'center', color: '#999' }}>Loading...</td></tr>
             ) : disposals.length === 0 ? (
-              <tr><td colSpan={8} style={{ padding: 40, textAlign: 'center', color: '#666' }}>No disposal requests</td></tr>
+              <tr><td colSpan={8} style={{ padding: 40, textAlign: 'center', color: '#999' }}>No disposal requests</td></tr>
             ) : disposals.map(d => (
-              <tr key={d.id} style={{ borderBottom: '1px solid #2A2A2A' }}
-                  onMouseEnter={e => (e.currentTarget.style.background = '#1A1A1A')}
+              <tr key={d.id} style={{ borderBottom: '1px solid #E0E0E0' }}
+                  onMouseEnter={e => (e.currentTarget.style.background = '#F8F8F8')}
                   onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
-                <td style={{ padding: '11px 14px', color: '#FFD700', fontWeight: 600 }}>{d.disposal_ref}</td>
-                <td style={{ padding: '11px 14px', color: '#F0F0F0' }}>{d.assets?.asset_tag}<br/><span style={{ fontSize: 10, color: '#666' }}>{d.assets?.model}</span></td>
-                <td style={{ padding: '11px 14px', color: '#F0F0F0', textTransform: 'capitalize' }}>{d.reason.replace(/_/g, ' ')}</td>
-                <td style={{ padding: '11px 14px', color: '#F0F0F0', maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{d.reason_detail || '—'}</td>
-                <td style={{ padding: '11px 14px', color: '#F87171', fontWeight: 600 }}>${Number(d.assets?.purchase_value || 0).toLocaleString()}</td>
-                <td style={{ padding: '11px 14px', color: '#F0F0F0' }}>{new Date(d.requested_at).toLocaleDateString()}</td>
+                <td style={{ padding: '11px 14px', color: '#B8960C', fontWeight: 600 }}>{d.disposal_ref}</td>
+                <td style={{ padding: '11px 14px', color: '#1A1A1A' }}>{d.assets?.asset_tag}<br/><span style={{ fontSize: 10, color: '#999' }}>{d.assets?.model}</span></td>
+                <td style={{ padding: '11px 14px', color: '#1A1A1A', textTransform: 'capitalize' }}>{d.reason.replace(/_/g, ' ')}</td>
+                <td style={{ padding: '11px 14px', color: '#1A1A1A', maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{d.reason_detail || '—'}</td>
+                <td style={{ padding: '11px 14px', color: '#DC2626', fontWeight: 600 }}>${Number(d.assets?.purchase_value || 0).toLocaleString()}</td>
+                <td style={{ padding: '11px 14px', color: '#1A1A1A' }}>{new Date(d.requested_at).toLocaleDateString()}</td>
                 <td style={{ padding: '11px 14px' }}><Badge text={d.status} color={STATUS_COLORS[d.status]} /></td>
                 <td style={{ padding: '11px 14px' }}>
                   <div style={{ display: 'flex', gap: 4 }}>
                     {d.status === 'pending_approval' && (
                       <>
-                        <button onClick={() => handleApprove(d.id, d.asset_id)} style={{ padding: '4px 10px', borderRadius: 6, border: 'none', background: '#4ADE8020', color: '#4ADE80', fontSize: 11, cursor: 'pointer', fontWeight: 600 }}>Approve</button>
-                        <button onClick={() => handleReject(d.id)} style={{ padding: '4px 10px', borderRadius: 6, border: 'none', background: '#F8717120', color: '#F87171', fontSize: 11, cursor: 'pointer', fontWeight: 600 }}>Reject</button>
+                        <button onClick={() => handleApprove(d.id, d.asset_id)} style={{ padding: '4px 10px', borderRadius: 6, border: 'none', background: '#16A34A20', color: '#16A34A', fontSize: 11, cursor: 'pointer', fontWeight: 600 }}>Approve</button>
+                        <button onClick={() => handleReject(d.id)} style={{ padding: '4px 10px', borderRadius: 6, border: 'none', background: '#DC262620', color: '#DC2626', fontSize: 11, cursor: 'pointer', fontWeight: 600 }}>Reject</button>
                       </>
                     )}
                     {d.status === 'approved' && (
-                      <button onClick={() => handleComplete(d.id, d.asset_id)} style={{ padding: '4px 10px', borderRadius: 6, border: 'none', background: '#4ADE8020', color: '#4ADE80', fontSize: 11, cursor: 'pointer', fontWeight: 600 }}>Complete</button>
+                      <button onClick={() => handleComplete(d.id, d.asset_id)} style={{ padding: '4px 10px', borderRadius: 6, border: 'none', background: '#16A34A20', color: '#16A34A', fontSize: 11, cursor: 'pointer', fontWeight: 600 }}>Complete</button>
                     )}
                   </div>
                 </td>
@@ -153,24 +153,24 @@ export default function DisposalPage() {
       </div>
 
       {showModal && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.3)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}
              onClick={() => setShowModal(false)}>
-          <div onClick={e => e.stopPropagation()} style={{ background: '#141414', border: '1px solid #2A2A2A', borderRadius: 16, width: '100%', maxWidth: 500 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '18px 24px', borderBottom: '1px solid #2A2A2A' }}>
-              <h3 style={{ margin: 0, color: '#FFD700', fontSize: 20 }}>Request Disposal</h3>
-              <button onClick={() => setShowModal(false)} style={{ background: 'transparent', border: 'none', color: '#666', cursor: 'pointer' }}><X size={18} /></button>
+          <div onClick={e => e.stopPropagation()} style={{ background: '#1A1A1Afff', border: '1px solid #E0E0E0', borderRadius: 16, width: '100%', maxWidth: 500 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '18px 24px', borderBottom: '1px solid #E0E0E0' }}>
+              <h3 style={{ margin: 0, color: '#B8960C', fontSize: 20 }}>Request Disposal</h3>
+              <button onClick={() => setShowModal(false)} style={{ background: 'transparent', border: 'none', color: '#999', cursor: 'pointer' }}><X size={18} /></button>
             </div>
             <form onSubmit={handleCreateDisposal} style={{ padding: 24, display: 'flex', flexDirection: 'column', gap: 14 }}>
               <div>
                 <label style={{ display: 'block', fontSize: 11, color: '#999', marginBottom: 4, textTransform: 'uppercase', fontWeight: 600 }}>Asset *</label>
-                <select required value={form.asset_id} onChange={e => setForm(f => ({...f, asset_id: e.target.value}))} style={{ ...inputStyle, color: form.asset_id ? '#fff' : '#666' }}>
+                <select required value={form.asset_id} onChange={e => setForm(f => ({...f, asset_id: e.target.value}))} style={{ ...inputStyle, color: form.asset_id ? '#1A1A1A' : '#999' }}>
                   <option value="">Select asset...</option>
                   {assets.map(a => <option key={a.id} value={a.id}>{a.asset_tag} — {a.model}</option>)}
                 </select>
               </div>
               <div>
                 <label style={{ display: 'block', fontSize: 11, color: '#999', marginBottom: 4, textTransform: 'uppercase', fontWeight: 600 }}>Reason *</label>
-                <select required value={form.reason} onChange={e => setForm(f => ({...f, reason: e.target.value}))} style={{ ...inputStyle, color: form.reason ? '#fff' : '#666' }}>
+                <select required value={form.reason} onChange={e => setForm(f => ({...f, reason: e.target.value}))} style={{ ...inputStyle, color: form.reason ? '#1A1A1A' : '#999' }}>
                   <option value="">Select reason...</option>
                   {REASONS.map(r => <option key={r} value={r}>{r.replace(/_/g, ' ')}</option>)}
                 </select>
@@ -180,8 +180,8 @@ export default function DisposalPage() {
                 <textarea value={form.reason_detail} onChange={e => setForm(f => ({...f, reason_detail: e.target.value}))} placeholder="Additional details..." rows={3} style={{ ...inputStyle, resize: 'vertical' }} />
               </div>
               <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
-                <button type="button" onClick={() => setShowModal(false)} style={{ padding: '9px 18px', borderRadius: 8, border: '1px solid #2A2A2A', background: 'transparent', color: '#F0F0F0', fontSize: 13, cursor: 'pointer' }}>Cancel</button>
-                <button type="submit" style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '9px 18px', borderRadius: 8, border: 'none', background: '#F87171', color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
+                <button type="button" onClick={() => setShowModal(false)} style={{ padding: '9px 18px', borderRadius: 8, border: '1px solid #E0E0E0', background: 'transparent', color: '#1A1A1A', fontSize: 13, cursor: 'pointer' }}>Cancel</button>
+                <button type="submit" style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '9px 18px', borderRadius: 8, border: 'none', background: '#DC2626', color: '#1A1A1A', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
                   <Trash2 size={15} /> Submit Request
                 </button>
               </div>

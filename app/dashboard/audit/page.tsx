@@ -6,7 +6,7 @@ import { useApp } from '../layout';
 import { ClipboardList, Search, Filter, Activity, Plus, Edit3, Trash2 } from 'lucide-react';
 
 const ACTION_COLORS: Record<string, string> = {
-  created: '#4ADE80', updated: '#60A5FA', deleted: '#F87171',
+  created: '#16A34A', updated: '#2563EB', deleted: '#DC2626',
 };
 const ACTION_ICONS: Record<string, React.ElementType> = {
   created: Plus, updated: Edit3, deleted: Trash2,
@@ -48,35 +48,35 @@ export default function AuditPage() {
   const totalPages = Math.ceil(filtered.length / PER_PAGE);
 
   const inputStyle = {
-    padding: '9px 12px', background: '#1E1E1E',
-    border: '1px solid #2A2A2A', borderRadius: 8, color: '#fff',
-    fontSize: 13, fontFamily: "'Neuton', serif",
+    padding: '9px 12px', background: '#1A1A1A',
+    border: '1px solid #E0E0E0', borderRadius: 8, color: '#1A1A1A',
+    fontSize: 13, fontFamily: 'var(--font-main)',
   } as const;
 
   return (
     <div className="animate-fade-in">
       <div style={{ display: 'flex', gap: 10, marginBottom: 16, flexWrap: 'wrap', alignItems: 'center' }}>
         <div style={{ position: 'relative', flex: 1, maxWidth: 300 }}>
-          <Search size={15} color="#666" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)' }} />
+          <Search size={15} color="#999" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)' }} />
           <input value={search} onChange={e => { setSearch(e.target.value); setPage(1); }}
                  placeholder="Search records..." style={{ ...inputStyle, width: '100%', paddingLeft: 36 }} />
         </div>
         <select value={tableFilter} onChange={e => { setTableFilter(e.target.value); setPage(1); }}
-                style={{ ...inputStyle, minWidth: 140, color: tableFilter ? '#fff' : '#666' }}>
+                style={{ ...inputStyle, minWidth: 140, color: tableFilter ? '#1A1A1A' : '#999' }}>
           <option value="">All Tables</option>
           {tables.map(t => <option key={t} value={t}>{t}</option>)}
         </select>
         <select value={actionFilter} onChange={e => { setActionFilter(e.target.value); setPage(1); }}
-                style={{ ...inputStyle, minWidth: 130, color: actionFilter ? '#fff' : '#666' }}>
+                style={{ ...inputStyle, minWidth: 130, color: actionFilter ? '#1A1A1A' : '#999' }}>
           <option value="">All Actions</option>
           <option value="created">Created</option>
           <option value="updated">Updated</option>
           <option value="deleted">Deleted</option>
         </select>
-        <span style={{ color: '#666', fontSize: 12 }}>{filtered.length} entries</span>
+        <span style={{ color: '#999', fontSize: 12 }}>{filtered.length} entries</span>
       </div>
 
-      <div style={{ overflowX: 'auto', border: '1px solid #2A2A2A', borderRadius: 10 }}>
+      <div style={{ overflowX: 'auto', border: '1px solid #E0E0E0', borderRadius: 10 }}>
         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12.5 }}>
           <thead>
             <tr>
@@ -84,16 +84,16 @@ export default function AuditPage() {
                 <th key={h} style={{
                   padding: '12px 14px', textAlign: 'left', background: '#111',
                   color: '#999', fontWeight: 600, fontSize: 10.5, textTransform: 'uppercase',
-                  letterSpacing: 0.6, borderBottom: '1px solid #2A2A2A', whiteSpace: 'nowrap',
+                  letterSpacing: 0.6, borderBottom: '1px solid #E0E0E0', whiteSpace: 'nowrap',
                 }}>{h}</th>
               ))}
             </tr>
           </thead>
           <tbody>
             {loading ? (
-              <tr><td colSpan={5} style={{ padding: 40, textAlign: 'center', color: '#666' }}>Loading...</td></tr>
+              <tr><td colSpan={5} style={{ padding: 40, textAlign: 'center', color: '#999' }}>Loading...</td></tr>
             ) : paged.length === 0 ? (
-              <tr><td colSpan={5} style={{ padding: 40, textAlign: 'center', color: '#666' }}>No audit entries found</td></tr>
+              <tr><td colSpan={5} style={{ padding: 40, textAlign: 'center', color: '#999' }}>No audit entries found</td></tr>
             ) : paged.map(log => {
               const Icon = ACTION_ICONS[log.action] || Activity;
               const color = ACTION_COLORS[log.action] || '#999';
@@ -108,8 +108,8 @@ export default function AuditPage() {
               }
 
               return (
-                <tr key={log.id} style={{ borderBottom: '1px solid #2A2A2A' }}
-                    onMouseEnter={e => (e.currentTarget.style.background = '#1A1A1A')}
+                <tr key={log.id} style={{ borderBottom: '1px solid #E0E0E0' }}
+                    onMouseEnter={e => (e.currentTarget.style.background = '#F8F8F8')}
                     onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
                   <td style={{ padding: '11px 14px', color: '#999', whiteSpace: 'nowrap', fontSize: 11 }}>
                     {new Date(log.changed_at).toLocaleString()}
@@ -124,9 +124,9 @@ export default function AuditPage() {
                       <Icon size={11} /> {log.action}
                     </span>
                   </td>
-                  <td style={{ padding: '11px 14px', color: '#FFD700', fontWeight: 600, fontSize: 12 }}>{log.table_name}</td>
-                  <td style={{ padding: '11px 14px', color: '#F0F0F0' }}>#{log.record_id}</td>
-                  <td style={{ padding: '11px 14px', color: '#F0F0F0', maxWidth: 400, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: 11 }}>
+                  <td style={{ padding: '11px 14px', color: '#B8960C', fontWeight: 600, fontSize: 12 }}>{log.table_name}</td>
+                  <td style={{ padding: '11px 14px', color: '#1A1A1A' }}>#{log.record_id}</td>
+                  <td style={{ padding: '11px 14px', color: '#1A1A1A', maxWidth: 400, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: 11 }}>
                     {changesSummary || '—'}
                   </td>
                 </tr>
@@ -140,8 +140,8 @@ export default function AuditPage() {
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 0', fontSize: 12, color: '#999' }}>
           <span>Page {page} of {totalPages}</span>
           <div style={{ display: 'flex', gap: 4 }}>
-            <button disabled={page === 1} onClick={() => setPage(p => p - 1)} style={{ padding: '5px 10px', background: '#1E1E1E', border: '1px solid #2A2A2A', borderRadius: 6, color: '#F0F0F0', cursor: page === 1 ? 'not-allowed' : 'pointer', opacity: page === 1 ? 0.4 : 1, fontSize: 12 }}>Prev</button>
-            <button disabled={page === totalPages} onClick={() => setPage(p => p + 1)} style={{ padding: '5px 10px', background: '#1E1E1E', border: '1px solid #2A2A2A', borderRadius: 6, color: '#F0F0F0', cursor: page === totalPages ? 'not-allowed' : 'pointer', opacity: page === totalPages ? 0.4 : 1, fontSize: 12 }}>Next</button>
+            <button disabled={page === 1} onClick={() => setPage(p => p - 1)} style={{ padding: '5px 10px', background: '#1A1A1A', border: '1px solid #E0E0E0', borderRadius: 6, color: '#1A1A1A', cursor: page === 1 ? 'not-allowed' : 'pointer', opacity: page === 1 ? 0.4 : 1, fontSize: 12 }}>Prev</button>
+            <button disabled={page === totalPages} onClick={() => setPage(p => p + 1)} style={{ padding: '5px 10px', background: '#1A1A1A', border: '1px solid #E0E0E0', borderRadius: 6, color: '#1A1A1A', cursor: page === totalPages ? 'not-allowed' : 'pointer', opacity: page === totalPages ? 0.4 : 1, fontSize: 12 }}>Next</button>
           </div>
         </div>
       )}

@@ -1,9 +1,8 @@
 /* ═══════════════════════════════════════════════
    MAGAYA MINING — IT ASSET MANAGEMENT SYSTEM
-   Font: Atops Display | Theme: Dark + Gold
+   Font: Atops Display | Theme: Light + Gold
    ═══════════════════════════════════════════════ */
 
-/* Atops Display — local font files in /public/fonts/ */
 @font-face {
   font-family: 'Atops Display';
   src: url('/fonts/AtopsDisplay-Regular.woff2') format('woff2'),
@@ -29,28 +28,28 @@
 @tailwind utilities;
 
 :root {
-  --bg: #0A0A0A;
-  --bg-card: #141414;
-  --bg-card-hover: #1A1A1A;
-  --bg-input: #1E1E1E;
-  --border: #2A2A2A;
-  --gold: #FFD700;
-  --gold-dark: #B8960C;
-  --gold-muted: rgba(255, 215, 0, 0.15);
-  --text-primary: #F0F0F0;
-  --text-secondary: #999999;
-  --text-muted: #666666;
-  --green: #4ADE80;
-  --red: #F87171;
-  --orange: #FB923C;
-  --blue: #60A5FA;
-  --purple: #A78BFA;
+  --bg: #FFFFFF;
+  --bg-sidebar: #F8F8F8;
+  --bg-card: #FFFFFF;
+  --bg-card-hover: #F5F5F5;
+  --bg-input: #F0F0F0;
+  --border: #E0E0E0;
+  --gold: #D4A800;
+  --gold-light: #FFD700;
+  --gold-bg: rgba(212, 168, 0, 0.08);
+  --gold-bg-strong: rgba(212, 168, 0, 0.15);
+  --text-primary: #1A1A1A;
+  --text-secondary: #666666;
+  --text-muted: #999999;
+  --green: #16A34A;
+  --red: #DC2626;
+  --orange: #EA580C;
+  --blue: #2563EB;
+  --purple: #7C3AED;
   --font-main: 'Atops Display', 'Segoe UI', system-ui, -apple-system, sans-serif;
 }
 
-* {
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
 body {
   font-family: var(--font-main);
@@ -60,66 +59,34 @@ body {
   padding: 0;
 }
 
-/* Custom scrollbar */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: var(--bg); }
-::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+::-webkit-scrollbar-track { background: #F5F5F5; }
+::-webkit-scrollbar-thumb { background: #CCC; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #AAA; }
 
-/* Form elements */
-input, select, textarea, button {
-  font-family: var(--font-main);
-}
+input, select, textarea, button { font-family: var(--font-main); }
+input::placeholder, textarea::placeholder { color: #AAA; }
+select option { background: #fff; color: #1A1A1A; }
 
-input::placeholder, textarea::placeholder {
-  color: var(--text-muted);
-}
-
-select option {
-  background: var(--bg-card);
-  color: white;
-}
-
-/* Focus styles */
 input:focus, select:focus, textarea:focus {
   outline: none;
   border-color: var(--gold) !important;
-  box-shadow: 0 0 0 1px rgba(255, 215, 0, 0.3);
+  box-shadow: 0 0 0 2px rgba(212, 168, 0, 0.2);
 }
 
-/* Table row hover */
-tr.hoverable:hover {
-  background: var(--bg-card-hover);
-}
-
-/* Animations */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: translateY(0); }
 }
-
-.animate-fade-in {
-  animation: fadeIn 0.3s ease-out forwards;
-}
+.animate-fade-in { animation: fadeIn 0.3s ease-out forwards; }
 
 @keyframes slideIn {
   from { opacity: 0; transform: translateX(-12px); }
   to { opacity: 1; transform: translateX(0); }
 }
-
-.animate-slide-in {
-  animation: slideIn 0.25s ease-out forwards;
-}
+.animate-slide-in { animation: slideIn 0.25s ease-out forwards; }
 
 @keyframes spin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
-}
-
-/* Gold gradient text */
-.gold-gradient {
-  background: linear-gradient(135deg, #FFD700, #B8960C);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
 }

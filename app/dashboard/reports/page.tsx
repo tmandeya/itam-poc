@@ -9,13 +9,13 @@ import {
 } from 'lucide-react';
 
 const REPORTS = [
-  { id: 'asset_register', name: 'Full Asset Register', desc: 'Complete list of all assets with current values', icon: Package, color: '#FFD700' },
-  { id: 'asset_valuation', name: 'Asset Valuation Report', desc: 'Purchase values vs current depreciated values', icon: DollarSign, color: '#4ADE80' },
-  { id: 'transfers', name: 'Transfer History', desc: 'All asset transfers between sites', icon: ArrowRightLeft, color: '#A78BFA' },
-  { id: 'repairs', name: 'Repair Report', desc: 'Repair history with costs and vendors', icon: Wrench, color: '#FB923C' },
-  { id: 'disposals', name: 'Disposal Report', desc: 'All disposed assets and reasons', icon: Trash2, color: '#F87171' },
-  { id: 'warranty', name: 'Warranty Status', desc: 'Assets with warranties expiring within 90 days', icon: Shield, color: '#60A5FA' },
-  { id: 'site_summary', name: 'Site Summary', desc: 'Asset counts and values per site', icon: BarChart3, color: '#FFD700' },
+  { id: 'asset_register', name: 'Full Asset Register', desc: 'Complete list of all assets with current values', icon: Package, color: '#B8960C' },
+  { id: 'asset_valuation', name: 'Asset Valuation Report', desc: 'Purchase values vs current depreciated values', icon: DollarSign, color: '#16A34A' },
+  { id: 'transfers', name: 'Transfer History', desc: 'All asset transfers between sites', icon: ArrowRightLeft, color: '#7C3AED' },
+  { id: 'repairs', name: 'Repair Report', desc: 'Repair history with costs and vendors', icon: Wrench, color: '#EA580C' },
+  { id: 'disposals', name: 'Disposal Report', desc: 'All disposed assets and reasons', icon: Trash2, color: '#DC2626' },
+  { id: 'warranty', name: 'Warranty Status', desc: 'Assets with warranties expiring within 90 days', icon: Shield, color: '#2563EB' },
+  { id: 'site_summary', name: 'Site Summary', desc: 'Asset counts and values per site', icon: BarChart3, color: '#B8960C' },
   { id: 'audit_trail', name: 'Audit Trail Export', desc: 'Complete audit log for compliance', icon: FileText, color: '#999' },
 ];
 
@@ -155,12 +155,12 @@ export default function ReportsPage() {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 16 }}>
         {REPORTS.map(report => (
           <div key={report.id} style={{
-            background: '#141414', border: '1px solid #2A2A2A', borderRadius: 12,
+            background: '#1A1A1Afff', border: '1px solid #E0E0E0', borderRadius: 12,
             padding: 20, display: 'flex', flexDirection: 'column', gap: 12,
             transition: 'border-color 0.2s',
           }}
           onMouseEnter={e => (e.currentTarget.style.borderColor = report.color)}
-          onMouseLeave={e => (e.currentTarget.style.borderColor = '#2A2A2A')}>
+          onMouseLeave={e => (e.currentTarget.style.borderColor = '#E0E0E0')}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
               <div style={{
                 width: 40, height: 40, borderRadius: 10,
@@ -170,8 +170,8 @@ export default function ReportsPage() {
                 <report.icon size={20} color={report.color} />
               </div>
               <div>
-                <div style={{ fontSize: 14, fontWeight: 600, color: '#F0F0F0' }}>{report.name}</div>
-                <div style={{ fontSize: 11, color: '#666' }}>{report.desc}</div>
+                <div style={{ fontSize: 14, fontWeight: 600, color: '#1A1A1A' }}>{report.name}</div>
+                <div style={{ fontSize: 11, color: '#999' }}>{report.desc}</div>
               </div>
             </div>
             <button
@@ -179,9 +179,9 @@ export default function ReportsPage() {
               disabled={generating === report.id}
               style={{
                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-                padding: '8px 16px', borderRadius: 8, border: '1px solid #2A2A2A',
-                background: generating === report.id ? '#1E1E1E' : 'transparent',
-                color: generating === report.id ? '#666' : '#F0F0F0',
+                padding: '8px 16px', borderRadius: 8, border: '1px solid #E0E0E0',
+                background: generating === report.id ? '#1A1A1A' : 'transparent',
+                color: generating === report.id ? '#999' : '#1A1A1A',
                 fontSize: 12, fontWeight: 600, cursor: generating === report.id ? 'not-allowed' : 'pointer',
               }}
             >
