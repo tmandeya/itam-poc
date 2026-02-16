@@ -31,7 +31,7 @@ export default function AuditPage() {
     setLoading(false);
   }
 
-  const tables = [...new Set(logs.map(l => l.table_name))].sort();
+  const tables = Array.from(new Set(logs.map((l: any) => l.table_name))).sort();
 
   const filtered = logs.filter(l => {
     if (tableFilter && l.table_name !== tableFilter) return false;
