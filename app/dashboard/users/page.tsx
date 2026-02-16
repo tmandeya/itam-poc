@@ -211,7 +211,7 @@ export default function UsersPage() {
       {showAddModal && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.3)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}
              onClick={() => setShowAddModal(false)}>
-          <div onClick={e => e.stopPropagation()} style={{ background: '#fff', border: '1px solid #E0E0E0', borderRadius: 16, width: '100%', maxWidth: 540, boxShadow: '0 20px 60px rgba(0,0,0,0.15)' }}>
+          <div onClick={e => e.stopPropagation()} style={{ background: '#fff', border: '1px solid #E0E0E0', borderRadius: 16, width: '100%', maxWidth: 540, maxHeight: '90vh', overflowY: 'auto', boxShadow: '0 20px 60px rgba(0,0,0,0.15)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '18px 24px', borderBottom: '1px solid #E0E0E0' }}>
               <h3 style={{ margin: 0, color: '#B8960C', fontSize: 20 }}>Add New User</h3>
               <button onClick={() => setShowAddModal(false)} style={{ background: 'transparent', border: 'none', color: '#999', cursor: 'pointer' }}><X size={18} /></button>
