@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { createClient } from '@/lib/supabase/client';
@@ -36,7 +36,7 @@ function parseCSV(text: string): Record<string, string>[] {
   const lines = text.split(/\r?\n/).filter(l => l.trim());
   if (lines.length < 2) return [];
 
-  // Parse header — handle quoted values
+  // Parse header â€” handle quoted values
   const parseLine = (line: string): string[] => {
     const result: string[] = [];
     let current = '';
@@ -158,7 +158,7 @@ export default function AssetsPage() {
       custodian_name: '', purchase_date: '', purchase_value: '', warranty_expiration: '', notes: '' });
   }
 
-  // ── CSV Upload Handlers ──
+  // â”€â”€ CSV Upload Handlers â”€â”€
   function handleFileSelect(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -272,14 +272,14 @@ export default function AssetsPage() {
                   onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}>
                 <td style={{ padding: '11px 14px', borderBottom: '1px solid #E0E0E0', color: '#B8960C', fontWeight: 600 }}>{asset.asset_tag}</td>
                 <td style={{ padding: '11px 14px', borderBottom: '1px solid #E0E0E0', color: '#1A1A1A', whiteSpace: 'nowrap' }}>
-                  <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><Monitor size={12} color="#999" />{types.find(t => t.id === asset.asset_type_id)?.name || '—'}</span>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><Monitor size={12} color="#999" />{types.find(t => t.id === asset.asset_type_id)?.name || 'â€”'}</span>
                 </td>
-                <td style={{ padding: '11px 14px', borderBottom: '1px solid #E0E0E0', color: '#1A1A1A' }}>{asset.model || '—'}</td>
-                <td style={{ padding: '11px 14px', borderBottom: '1px solid #E0E0E0', color: '#1A1A1A' }}>{asset.serial_number || '—'}</td>
+                <td style={{ padding: '11px 14px', borderBottom: '1px solid #E0E0E0', color: '#1A1A1A' }}>{asset.model || 'â€”'}</td>
+                <td style={{ padding: '11px 14px', borderBottom: '1px solid #E0E0E0', color: '#1A1A1A' }}>{asset.serial_number || 'â€”'}</td>
                 <td style={{ padding: '11px 14px', borderBottom: '1px solid #E0E0E0', color: '#1A1A1A', whiteSpace: 'nowrap' }}>
                   <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><MapPin size={11} color="#B8960C" />{asset.site_id}</span>
                 </td>
-                <td style={{ padding: '11px 14px', borderBottom: '1px solid #E0E0E0', color: '#1A1A1A' }}>{asset.custodian_name || '—'}</td>
+                <td style={{ padding: '11px 14px', borderBottom: '1px solid #E0E0E0', color: '#1A1A1A' }}>{asset.custodian_name || 'â€”'}</td>
                 <td style={{ padding: '11px 14px', borderBottom: '1px solid #E0E0E0' }}><Badge text={asset.status} color={STATUS_COLORS[asset.status] || '#999'} /></td>
                 <td style={{ padding: '11px 14px', borderBottom: '1px solid #E0E0E0' }}><Badge text={asset.condition} color={CONDITION_COLORS[asset.condition] || '#999'} /></td>
                 <td style={{ padding: '11px 14px', borderBottom: '1px solid #E0E0E0', color: '#16A34A', fontWeight: 600 }}>${Number(asset.purchase_value).toLocaleString()}</td>
@@ -292,7 +292,7 @@ export default function AssetsPage() {
       {/* Pagination */}
       {totalPages > 1 && (
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 0', fontSize: 12, color: '#999' }}>
-          <span>Showing {((page - 1) * PER_PAGE) + 1}–{Math.min(page * PER_PAGE, filtered.length)} of {filtered.length}</span>
+          <span>Showing {((page - 1) * PER_PAGE) + 1}â€“{Math.min(page * PER_PAGE, filtered.length)} of {filtered.length}</span>
           <div style={{ display: 'flex', gap: 4 }}>
             <button disabled={page === 1} onClick={() => setPage(p => p - 1)} style={{ padding: '5px 10px', background: '#fff', border: '1px solid #E0E0E0', borderRadius: 6, color: '#1A1A1A', cursor: page === 1 ? 'not-allowed' : 'pointer', opacity: page === 1 ? 0.4 : 1, fontSize: 12 }}>Prev</button>
             <button disabled={page === totalPages} onClick={() => setPage(p => p + 1)} style={{ padding: '5px 10px', background: '#fff', border: '1px solid #E0E0E0', borderRadius: 6, color: '#1A1A1A', cursor: page === totalPages ? 'not-allowed' : 'pointer', opacity: page === totalPages ? 0.4 : 1, fontSize: 12 }}>Next</button>
@@ -300,7 +300,7 @@ export default function AssetsPage() {
         </div>
       )}
 
-      {/* ── BULK UPLOAD MODAL ── */}
+      {/* â”€â”€ BULK UPLOAD MODAL â”€â”€ */}
       {showUploadModal && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.3)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}
              onClick={() => { setShowUploadModal(false); resetUpload(); }}>
@@ -332,7 +332,7 @@ export default function AssetsPage() {
                   <strong>Required:</strong> site_id (MM, ATL, AVN, CHD, HRE, PSE, PLD, WLD)<br/>
                   <strong>Recommended:</strong> asset_type, manufacturer, model, serial_number, custodian_name, purchase_value<br/>
                   <strong>Optional:</strong> hostname, ip_address, category, purchase_date, warranty_expiration, status, condition, specifications, notes<br/>
-                  <span style={{ color: '#999' }}>Types are matched automatically (e.g. Laptop, Desktop, Server, Printer, Phone, Monitor, Network Switch, UPS, Tablet, Other)</span>
+                  <span style={{ color: "#999" }}>Types are matched automatically: Laptop, Desktop, Server, Printer, Phone, Monitor, Network Switch, UPS, Tablet, Other</span>
                 </div>
               </div>
 
@@ -382,7 +382,7 @@ export default function AssetsPage() {
                         {previewData.slice(0, 5).map((row, i) => (
                           <tr key={i}>
                             {Object.values(row).slice(0, 8).map((v, j) => (
-                              <td key={j} style={{ padding: '6px 10px', borderBottom: '1px solid #E0E0E0', color: '#1A1A1A', maxWidth: 150, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{v || '—'}</td>
+                              <td key={j} style={{ padding: '6px 10px', borderBottom: '1px solid #E0E0E0', color: '#1A1A1A', maxWidth: 150, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{v || 'â€”'}</td>
                             ))}
                             {Object.keys(row).length > 8 && <td style={{ padding: '6px 10px', borderBottom: '1px solid #E0E0E0', color: '#999' }}>...</td>}
                           </tr>
@@ -462,7 +462,7 @@ export default function AssetsPage() {
         </div>
       )}
 
-      {/* ── ADD ASSET MODAL ── */}
+      {/* â”€â”€ ADD ASSET MODAL â”€â”€ */}
       {showAddModal && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.3)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}
              onClick={() => setShowAddModal(false)}>
