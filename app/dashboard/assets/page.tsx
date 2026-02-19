@@ -1,12 +1,12 @@
-﻿'use client';
+'use client';
 
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { useApp } from '../layout';
 import type { Asset, AssetType, Manufacturer, AssetCategory } from '@/types/database';
 import {
-  Search, Plus, Upload, Download, Monitor, MapPin, Eye,
-  X, Check, Tag, ChevronLeft, ChevronRight, FileSpreadsheet,
+  Search, Plus, Upload, Download, Monitor, MapPin,
+  X, Check, Tag, FileSpreadsheet,
   AlertCircle, CheckCircle2, Loader2,
 } from 'lucide-react';
 
@@ -35,8 +35,6 @@ function Badge({ text, color }: { text: string; color: string }) {
 function parseCSV(text: string): Record<string, string>[] {
   const lines = text.split(/\r?\n/).filter(l => l.trim());
   if (lines.length < 2) return [];
-
-  // Parse header â€” handle quoted values
   const parseLine = (line: string): string[] => {
     const result: string[] = [];
     let current = '';
@@ -50,13 +48,11 @@ function parseCSV(text: string): Record<string, string>[] {
     result.push(current.trim());
     return result;
   };
-
   const headers = parseLine(lines[0]).map(h => h.toLowerCase().replace(/[^a-z0-9_]/g, '_'));
   const rows: Record<string, string>[] = [];
-
   for (let i = 1; i < lines.length; i++) {
     const values = parseLine(lines[i]);
-    if (values.every(v => !v)) continue; // skip empty rows
+    if (values.every(v => !v)) continue;
     const row: Record<string, string> = {};
     headers.forEach((h, idx) => { row[h] = values[idx] || ''; });
     rows.push(row);
@@ -84,23 +80,15 @@ export default function AssetsPage() {
     manufacturer_id: '', asset_type_id: '', category_id: '', site_id: '',
     custodian_name: '', purchase_date: '', purchase_value: '', warranty_expiration: '', notes: '',
   });
-
-  // Upload state
   const fileRef = useRef<HTMLInputElement>(null);
   const [uploadFile, setUploadFile] = useState<File | null>(null);
   const [previewData, setPreviewData] = useState<Record<string, string>[]>([]);
   const [uploading, setUploading] = useState(false);
   const [uploadResult, setUploadResult] = useState<any>(null);
-
   const PER_PAGE = 15;
 
-  useEffect(() => {
-    loadAssets(); loadRefData();
-    const channel = supabase.channel('assets-changes')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'assets' }, () => { loadAssets(); })
-      .subscribe();
-    return () => { supabase.removeChannel(channel); };
-  }, [selectedSite]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => { loadAssets(); loadRefData(); }, [selectedSite]);
 
   async function loadAssets() {
     setLoading(true);
@@ -158,18 +146,15 @@ export default function AssetsPage() {
       custodian_name: '', purchase_date: '', purchase_value: '', warranty_expiration: '', notes: '' });
   }
 
-  // â”€â”€ CSV Upload Handlers â”€â”€
   function handleFileSelect(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
     setUploadFile(file);
     setUploadResult(null);
-
     const reader = new FileReader();
     reader.onload = (ev) => {
       const text = ev.target?.result as string;
-      const rows = parseCSV(text);
-      setPreviewData(rows);
+      setPreviewData(parseCSV(text));
     };
     reader.readAsText(file);
   }
@@ -178,7 +163,6 @@ export default function AssetsPage() {
     if (previewData.length === 0) return;
     setUploading(true);
     setUploadResult(null);
-
     try {
       const res = await fetch('/api/assets/bulk', {
         method: 'POST',
@@ -194,14 +178,10 @@ export default function AssetsPage() {
     setUploading(false);
   }
 
-  function downloadTemplate() {
-    window.open('/api/assets/bulk', '_blank');
-  }
+  function downloadTemplate() { window.open('/api/assets/bulk', '_blank'); }
 
   function resetUpload() {
-    setUploadFile(null);
-    setPreviewData([]);
-    setUploadResult(null);
+    setUploadFile(null); setPreviewData([]); setUploadResult(null);
     if (fileRef.current) fileRef.current.value = '';
   }
 
@@ -216,9 +196,10 @@ export default function AssetsPage() {
     letterSpacing: 0.6, borderBottom: '1px solid #E0E0E0', whiteSpace: 'nowrap' as const,
   };
 
+  const SUPPORTED_TYPES = ['Laptop', 'Desktop', 'Server', 'Printer', 'Phone', 'Monitor', 'Network Switch', 'UPS', 'Tablet', 'Other'];
+
   return (
     <div className="animate-fade-in">
-      {/* Toolbar */}
       <div style={{ display: 'flex', gap: 10, marginBottom: 16, flexWrap: 'wrap', alignItems: 'center' }}>
         <div style={{ position: 'relative', flex: 1, maxWidth: 300 }}>
           <Search size={15} color="#999" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)' }} />
@@ -249,22 +230,19 @@ export default function AssetsPage() {
         }}><Plus size={15} /> Add Asset</button>
       </div>
 
-      {/* Asset Table */}
       <div style={{ overflowX: 'auto', border: '1px solid #E0E0E0', borderRadius: 10, background: '#fff', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12.5 }}>
-          <thead>
-            <tr>
-              {['Asset Tag','Type','Model','Serial Number','Site','Custodian','Status','Condition','Value'].map(h => (
-                <th key={h} style={thStyle}>{h}</th>
-              ))}
-            </tr>
-          </thead>
+          <thead><tr>
+            {['Asset Tag','Type','Model','Serial Number','Site','Custodian','Status','Condition','Value'].map(h => (
+              <th key={h} style={thStyle}>{h}</th>
+            ))}
+          </tr></thead>
           <tbody>
             {loading ? (
               <tr><td colSpan={9} style={{ padding: 40, textAlign: 'center', color: '#999' }}>Loading assets...</td></tr>
             ) : paged.length === 0 ? (
               <tr><td colSpan={9} style={{ padding: 40, textAlign: 'center', color: '#999' }}>
-                {assets.length === 0 ? 'No assets yet. Add one manually or use Bulk Upload to import a CSV.' : 'No assets match your filters'}
+                {assets.length === 0 ? 'No assets yet. Use Bulk Upload or Add Asset to get started.' : 'No assets match your filters'}
               </td></tr>
             ) : paged.map(asset => (
               <tr key={asset.id} onClick={() => setSelectedAsset(asset)} style={{ cursor: 'pointer', transition: 'background 0.15s' }}
@@ -272,14 +250,14 @@ export default function AssetsPage() {
                   onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}>
                 <td style={{ padding: '11px 14px', borderBottom: '1px solid #E0E0E0', color: '#B8960C', fontWeight: 600 }}>{asset.asset_tag}</td>
                 <td style={{ padding: '11px 14px', borderBottom: '1px solid #E0E0E0', color: '#1A1A1A', whiteSpace: 'nowrap' }}>
-                  <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><Monitor size={12} color="#999" />{types.find(t => t.id === asset.asset_type_id)?.name || 'â€”'}</span>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><Monitor size={12} color="#999" />{types.find(t => t.id === asset.asset_type_id)?.name || '\u2014'}</span>
                 </td>
-                <td style={{ padding: '11px 14px', borderBottom: '1px solid #E0E0E0', color: '#1A1A1A' }}>{asset.model || 'â€”'}</td>
-                <td style={{ padding: '11px 14px', borderBottom: '1px solid #E0E0E0', color: '#1A1A1A' }}>{asset.serial_number || 'â€”'}</td>
+                <td style={{ padding: '11px 14px', borderBottom: '1px solid #E0E0E0', color: '#1A1A1A' }}>{asset.model || '\u2014'}</td>
+                <td style={{ padding: '11px 14px', borderBottom: '1px solid #E0E0E0', color: '#1A1A1A' }}>{asset.serial_number || '\u2014'}</td>
                 <td style={{ padding: '11px 14px', borderBottom: '1px solid #E0E0E0', color: '#1A1A1A', whiteSpace: 'nowrap' }}>
                   <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><MapPin size={11} color="#B8960C" />{asset.site_id}</span>
                 </td>
-                <td style={{ padding: '11px 14px', borderBottom: '1px solid #E0E0E0', color: '#1A1A1A' }}>{asset.custodian_name || 'â€”'}</td>
+                <td style={{ padding: '11px 14px', borderBottom: '1px solid #E0E0E0', color: '#1A1A1A' }}>{asset.custodian_name || '\u2014'}</td>
                 <td style={{ padding: '11px 14px', borderBottom: '1px solid #E0E0E0' }}><Badge text={asset.status} color={STATUS_COLORS[asset.status] || '#999'} /></td>
                 <td style={{ padding: '11px 14px', borderBottom: '1px solid #E0E0E0' }}><Badge text={asset.condition} color={CONDITION_COLORS[asset.condition] || '#999'} /></td>
                 <td style={{ padding: '11px 14px', borderBottom: '1px solid #E0E0E0', color: '#16A34A', fontWeight: 600 }}>${Number(asset.purchase_value).toLocaleString()}</td>
@@ -289,10 +267,9 @@ export default function AssetsPage() {
         </table>
       </div>
 
-      {/* Pagination */}
       {totalPages > 1 && (
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 0', fontSize: 12, color: '#999' }}>
-          <span>Showing {((page - 1) * PER_PAGE) + 1}â€“{Math.min(page * PER_PAGE, filtered.length)} of {filtered.length}</span>
+          <span>{'Showing ' + (((page - 1) * PER_PAGE) + 1) + ' to ' + Math.min(page * PER_PAGE, filtered.length) + ' of ' + filtered.length}</span>
           <div style={{ display: 'flex', gap: 4 }}>
             <button disabled={page === 1} onClick={() => setPage(p => p - 1)} style={{ padding: '5px 10px', background: '#fff', border: '1px solid #E0E0E0', borderRadius: 6, color: '#1A1A1A', cursor: page === 1 ? 'not-allowed' : 'pointer', opacity: page === 1 ? 0.4 : 1, fontSize: 12 }}>Prev</button>
             <button disabled={page === totalPages} onClick={() => setPage(p => p + 1)} style={{ padding: '5px 10px', background: '#fff', border: '1px solid #E0E0E0', borderRadius: 6, color: '#1A1A1A', cursor: page === totalPages ? 'not-allowed' : 'pointer', opacity: page === totalPages ? 0.4 : 1, fontSize: 12 }}>Next</button>
@@ -300,7 +277,6 @@ export default function AssetsPage() {
         </div>
       )}
 
-      {/* â”€â”€ BULK UPLOAD MODAL â”€â”€ */}
       {showUploadModal && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.3)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}
              onClick={() => { setShowUploadModal(false); resetUpload(); }}>
@@ -309,38 +285,29 @@ export default function AssetsPage() {
               <h3 style={{ margin: 0, color: '#B8960C', fontSize: 18 }}>Bulk Asset Upload</h3>
               <button onClick={() => { setShowUploadModal(false); resetUpload(); }} style={{ background: 'transparent', border: 'none', color: '#999', cursor: 'pointer' }}><X size={18} /></button>
             </div>
-
             <div style={{ padding: '16px 20px' }}>
-              {/* Step 1: Template download */}
               <div style={{ display: 'flex', gap: 12, marginBottom: 16, padding: 14, background: '#F8F8F8', borderRadius: 8, alignItems: 'center' }}>
                 <FileSpreadsheet size={20} color="#B8960C" />
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: 13, fontWeight: 600, color: '#1A1A1A' }}>1. Download CSV template</div>
                   <div style={{ fontSize: 11, color: '#666' }}>Pre-formatted with all required columns and example rows</div>
                 </div>
-                <button onClick={downloadTemplate} style={{
-                  padding: '6px 14px', borderRadius: 6, border: '1px solid #E0E0E0',
-                  background: '#fff', color: '#1A1A1A', fontSize: 12, cursor: 'pointer',
-                  display: 'flex', alignItems: 'center', gap: 6,
-                }}><Download size={13} /> Template</button>
+                <button onClick={downloadTemplate} style={{ padding: '6px 14px', borderRadius: 6, border: '1px solid #E0E0E0', background: '#fff', color: '#1A1A1A', fontSize: 12, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}><Download size={13} /> Template</button>
               </div>
 
-              {/* Column reference */}
               <div style={{ marginBottom: 16, padding: 14, background: '#FFFFF0', border: '1px solid #F5E6A3', borderRadius: 8 }}>
                 <div style={{ fontSize: 12, fontWeight: 600, color: '#B8960C', marginBottom: 6 }}>CSV Column Reference</div>
                 <div style={{ fontSize: 11, color: '#666', lineHeight: 1.6 }}>
                   <strong>Required:</strong> site_id (MM, ATL, AVN, CHD, HRE, PSE, PLD, WLD)<br/>
                   <strong>Recommended:</strong> asset_type, manufacturer, model, serial_number, custodian_name, purchase_value<br/>
                   <strong>Optional:</strong> hostname, ip_address, category, purchase_date, warranty_expiration, status, condition, specifications, notes<br/>
-                 <span style={{ color: '#999' }}>Supported types: Laptop, Desktop, Server, Printer, Phone, Monitor, Network Switch, UPS, Tablet, Other</span>
+                  <span style={{ color: '#999' }}>{'Supported types: ' + SUPPORTED_TYPES.join(', ')}</span>
                 </div>
               </div>
 
-              {/* Step 2: File upload */}
               <div style={{ marginBottom: 16 }}>
                 <div style={{ fontSize: 13, fontWeight: 600, color: '#1A1A1A', marginBottom: 8 }}>2. Upload your CSV file</div>
-                <input ref={fileRef} type="file" accept=".csv,.txt" onChange={handleFileSelect}
-                       style={{ display: 'none' }} />
+                <input ref={fileRef} type="file" accept=".csv,.txt" onChange={handleFileSelect} style={{ display: 'none' }} />
                 {!uploadFile ? (
                   <button onClick={() => fileRef.current?.click()} style={{
                     width: '100%', padding: '28px 20px', borderRadius: 10,
@@ -349,40 +316,36 @@ export default function AssetsPage() {
                     display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8,
                   }}>
                     <Upload size={24} color="#CCC" />
-                    Click to select CSV file
-                    <span style={{ fontSize: 11 }}>or drag and drop</span>
+                    {'Click to select CSV file'}
                   </button>
                 ) : (
                   <div style={{ padding: '10px 14px', borderRadius: 8, background: '#F0FDF4', border: '1px solid #BBF7D0', display: 'flex', alignItems: 'center', gap: 10 }}>
                     <CheckCircle2 size={16} color="#16A34A" />
                     <div style={{ flex: 1 }}>
                       <div style={{ fontSize: 13, fontWeight: 600, color: '#1A1A1A' }}>{uploadFile.name}</div>
-                      <div style={{ fontSize: 11, color: '#16A34A' }}>{previewData.length} rows detected</div>
+                      <div style={{ fontSize: 11, color: '#16A34A' }}>{previewData.length + ' rows detected'}</div>
                     </div>
                     <button onClick={resetUpload} style={{ padding: '4px 10px', borderRadius: 4, border: '1px solid #E0E0E0', background: '#fff', color: '#666', fontSize: 11, cursor: 'pointer' }}>Change</button>
                   </div>
                 )}
               </div>
 
-              {/* Preview table */}
               {previewData.length > 0 && !uploadResult && (
                 <div style={{ marginBottom: 16 }}>
                   <div style={{ fontSize: 13, fontWeight: 600, color: '#1A1A1A', marginBottom: 8 }}>3. Preview (first 5 rows)</div>
                   <div style={{ overflowX: 'auto', border: '1px solid #E0E0E0', borderRadius: 8 }}>
                     <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 11 }}>
-                      <thead>
-                        <tr>
-                          {Object.keys(previewData[0]).slice(0, 8).map(h => (
-                            <th key={h} style={{ padding: '8px 10px', background: '#F8F8F8', color: '#666', fontWeight: 600, fontSize: 10, textTransform: 'uppercase', borderBottom: '1px solid #E0E0E0', whiteSpace: 'nowrap' }}>{h}</th>
-                          ))}
-                          {Object.keys(previewData[0]).length > 8 && <th style={{ padding: '8px 10px', background: '#F8F8F8', color: '#999', fontSize: 10, borderBottom: '1px solid #E0E0E0' }}>+{Object.keys(previewData[0]).length - 8} more</th>}
-                        </tr>
-                      </thead>
+                      <thead><tr>
+                        {Object.keys(previewData[0]).slice(0, 8).map(h => (
+                          <th key={h} style={{ padding: '8px 10px', background: '#F8F8F8', color: '#666', fontWeight: 600, fontSize: 10, textTransform: 'uppercase', borderBottom: '1px solid #E0E0E0', whiteSpace: 'nowrap' }}>{h}</th>
+                        ))}
+                        {Object.keys(previewData[0]).length > 8 && <th style={{ padding: '8px 10px', background: '#F8F8F8', color: '#999', fontSize: 10, borderBottom: '1px solid #E0E0E0' }}>{'+ ' + (Object.keys(previewData[0]).length - 8) + ' more'}</th>}
+                      </tr></thead>
                       <tbody>
                         {previewData.slice(0, 5).map((row, i) => (
                           <tr key={i}>
                             {Object.values(row).slice(0, 8).map((v, j) => (
-                              <td key={j} style={{ padding: '6px 10px', borderBottom: '1px solid #E0E0E0', color: '#1A1A1A', maxWidth: 150, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{v || 'â€”'}</td>
+                              <td key={j} style={{ padding: '6px 10px', borderBottom: '1px solid #E0E0E0', color: '#1A1A1A', maxWidth: 150, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{v || '\u2014'}</td>
                             ))}
                             {Object.keys(row).length > 8 && <td style={{ padding: '6px 10px', borderBottom: '1px solid #E0E0E0', color: '#999' }}>...</td>}
                           </tr>
@@ -393,20 +356,19 @@ export default function AssetsPage() {
                 </div>
               )}
 
-              {/* Upload result */}
               {uploadResult && (
                 <div style={{ marginBottom: 16 }}>
                   {uploadResult.error ? (
                     <div style={{ padding: 14, borderRadius: 8, background: '#FEF2F2', border: '1px solid #FECACA' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#DC2626', fontSize: 14, fontWeight: 600, marginBottom: 4 }}>
-                        <AlertCircle size={16} /> Upload Failed
+                        <AlertCircle size={16} /> {'Upload Failed'}
                       </div>
                       <div style={{ fontSize: 12, color: '#DC2626' }}>{uploadResult.error}</div>
                     </div>
                   ) : (
                     <div style={{ padding: 14, borderRadius: 8, background: '#F0FDF4', border: '1px solid #BBF7D0' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#16A34A', fontSize: 14, fontWeight: 600, marginBottom: 8 }}>
-                        <CheckCircle2 size={16} /> Upload Complete
+                        <CheckCircle2 size={16} /> {'Upload Complete'}
                       </div>
                       <div style={{ display: 'flex', gap: 20, fontSize: 13 }}>
                         <span><strong>{uploadResult.inserted}</strong> imported</span>
@@ -417,13 +379,8 @@ export default function AssetsPage() {
                         <div style={{ marginTop: 10, padding: 10, background: '#FFFBEB', borderRadius: 6, fontSize: 11 }}>
                           <div style={{ fontWeight: 600, color: '#EA580C', marginBottom: 4 }}>Row Errors:</div>
                           {uploadResult.row_errors.map((e: any, i: number) => (
-                            <div key={i} style={{ color: '#666' }}>Row {e.row}: {e.message}</div>
+                            <div key={i} style={{ color: '#666' }}>{'Row ' + e.row + ': ' + e.message}</div>
                           ))}
-                        </div>
-                      )}
-                      {uploadResult.insert_errors?.length > 0 && (
-                        <div style={{ marginTop: 8, fontSize: 11, color: '#DC2626' }}>
-                          {uploadResult.insert_errors.map((e: string, i: number) => <div key={i}>{e}</div>)}
                         </div>
                       )}
                     </div>
@@ -431,29 +388,22 @@ export default function AssetsPage() {
                 </div>
               )}
 
-              {/* Actions */}
               <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
-                <button onClick={() => { setShowUploadModal(false); resetUpload(); }} style={{
-                  padding: '8px 16px', borderRadius: 6, border: '1px solid #E0E0E0',
-                  background: '#fff', color: '#1A1A1A', fontSize: 13, cursor: 'pointer',
-                }}>{uploadResult?.inserted ? 'Close' : 'Cancel'}</button>
+                <button onClick={() => { setShowUploadModal(false); resetUpload(); }} style={{ padding: '8px 16px', borderRadius: 6, border: '1px solid #E0E0E0', background: '#fff', color: '#1A1A1A', fontSize: 13, cursor: 'pointer' }}>{uploadResult?.inserted ? 'Close' : 'Cancel'}</button>
                 {previewData.length > 0 && !uploadResult?.inserted && (
                   <button onClick={handleBulkUpload} disabled={uploading} style={{
-                    display: 'flex', alignItems: 'center', gap: 8, padding: '8px 16px',
-                    borderRadius: 6, border: 'none',
-                    background: uploading ? '#B8960C' : '#D4A800',
-                    color: '#fff', fontSize: 13, fontWeight: 600,
+                    display: 'flex', alignItems: 'center', gap: 8, padding: '8px 16px', borderRadius: 6, border: 'none',
+                    background: uploading ? '#B8960C' : '#D4A800', color: '#fff', fontSize: 13, fontWeight: 600,
                     cursor: uploading ? 'not-allowed' : 'pointer',
                   }}>
                     {uploading ? <Loader2 size={14} style={{ animation: 'spin 1s linear infinite' }} /> : <Upload size={14} />}
-                    {uploading ? `Uploading ${previewData.length} assets...` : `Upload ${previewData.length} Assets`}
+                    {uploading ? 'Uploading ' + previewData.length + ' assets...' : 'Upload ' + previewData.length + ' Assets'}
                   </button>
                 )}
                 {uploadResult?.inserted > 0 && (
                   <button onClick={resetUpload} style={{
-                    display: 'flex', alignItems: 'center', gap: 8, padding: '8px 16px',
-                    borderRadius: 6, border: 'none', background: '#D4A800',
-                    color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer',
+                    display: 'flex', alignItems: 'center', gap: 8, padding: '8px 16px', borderRadius: 6, border: 'none',
+                    background: '#D4A800', color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer',
                   }}><Upload size={14} /> Upload More</button>
                 )}
               </div>
@@ -462,7 +412,6 @@ export default function AssetsPage() {
         </div>
       )}
 
-      {/* â”€â”€ ADD ASSET MODAL â”€â”€ */}
       {showAddModal && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.3)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}
              onClick={() => setShowAddModal(false)}>
@@ -474,7 +423,7 @@ export default function AssetsPage() {
             <form onSubmit={handleAddAsset} style={{ padding: '14px 20px 18px' }}>
               <div style={{ fontSize: 12, color: '#666', marginBottom: 14, padding: '8px 12px', background: 'rgba(212,168,0,0.08)', borderRadius: 8, border: '1px solid rgba(212,168,0,0.2)' }}>
                 <Tag size={13} color="#B8960C" style={{ verticalAlign: 'middle', marginRight: 6 }} />
-                Asset Tag will be auto-generated (e.g., TAG-2026-0001)
+                {'Asset Tag will be auto-generated'}
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px 16px' }}>
                 <div><label style={{ display: 'block', fontSize: 10, color: '#666', marginBottom: 3, textTransform: 'uppercase', fontWeight: 600 }}>Site *</label>
@@ -516,7 +465,7 @@ export default function AssetsPage() {
               </div>
               <div style={{ marginTop: 10 }}>
                 <label style={{ display: 'block', fontSize: 10, color: '#666', marginBottom: 3, textTransform: 'uppercase', fontWeight: 600 }}>Specifications</label>
-                <input value={form.specifications} onChange={(e) => setForm(f => ({...f, specifications: e.target.value}))} placeholder="e.g. 16GB RAM, 512GB SSD, Intel i7" style={inputStyle} />
+                <input value={form.specifications} onChange={(e) => setForm(f => ({...f, specifications: e.target.value}))} placeholder="e.g. 16GB RAM, 512GB SSD" style={inputStyle} />
               </div>
               <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end', marginTop: 14 }}>
                 <button type="button" onClick={() => setShowAddModal(false)} style={{ padding: '8px 16px', borderRadius: 6, border: '1px solid #E0E0E0', background: '#fff', color: '#1A1A1A', fontSize: 13, cursor: 'pointer' }}>Cancel</button>
