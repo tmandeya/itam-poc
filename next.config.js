@@ -1,4 +1,3 @@
-@'
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   eslint: {
@@ -10,4 +9,3 @@ const nextConfig = {
 };
 
 module.exports = nextConfig;
-'@ | Set-Content -Path "next.config.js" -Encoding utf8
