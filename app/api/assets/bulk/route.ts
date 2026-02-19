@@ -50,28 +50,27 @@ export async function POST(req: NextRequest) {
       const typeStr = (row.asset_type || row.type || '').toLowerCase().trim();
       let typeId = typeMap.get(typeStr) || null;
       if (typeStr && !typeId) {
-        // Try partial match
-        for (const [name, id] of typeMap) {
-          if (name.includes(typeStr) || typeStr.includes(name)) { typeId = id; break; }
-        }
+        typeMap.forEach((id, name) => {
+          if (!typeId && (name.includes(typeStr) || typeStr.includes(name))) { typeId = id; }
+        });
       }
 
       // Match manufacturer (fuzzy)
       const mfgStr = (row.manufacturer || '').toLowerCase().trim();
       let mfgId = mfgMap.get(mfgStr) || null;
       if (mfgStr && !mfgId) {
-        for (const [name, id] of mfgMap) {
-          if (name.includes(mfgStr) || mfgStr.includes(name)) { mfgId = id; break; }
-        }
+        mfgMap.forEach((id, name) => {
+          if (!mfgId && (name.includes(mfgStr) || mfgStr.includes(name))) { mfgId = id; }
+        });
       }
 
       // Match category (fuzzy)
       const catStr = (row.category || '').toLowerCase().trim();
       let catId = catMap.get(catStr) || null;
       if (catStr && !catId) {
-        for (const [name, id] of catMap) {
-          if (name.includes(catStr) || catStr.includes(name)) { catId = id; break; }
-        }
+        catMap.forEach((id, name) => {
+          if (!catId && (name.includes(catStr) || catStr.includes(name))) { catId = id; }
+        });
       }
 
       // Parse value — handle currency symbols and commas
