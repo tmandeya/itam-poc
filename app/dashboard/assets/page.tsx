@@ -332,7 +332,7 @@ export default function AssetsPage() {
                   <strong>Required:</strong> site_id (MM, ATL, AVN, CHD, HRE, PSE, PLD, WLD)<br/>
                   <strong>Recommended:</strong> asset_type, manufacturer, model, serial_number, custodian_name, purchase_value<br/>
                   <strong>Optional:</strong> hostname, ip_address, category, purchase_date, warranty_expiration, status, condition, specifications, notes<br/>
-                  <span style={{ color: "#999" }}>Types are matched automatically: Laptop, Desktop, Server, Printer, Phone, Monitor, Network Switch, UPS, Tablet, Other</span>
+                 <span style={{ color: '#999' }}>Supported types: Laptop, Desktop, Server, Printer, Phone, Monitor, Network Switch, UPS, Tablet, Other</span>
                 </div>
               </div>
 
